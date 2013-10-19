@@ -12,6 +12,9 @@
 #include "filesystem.h"
 #include "fio.h"
 
+/* standard header*/
+#include <stdint.h>
+
 extern const char _sromfs;
 
 static void setup_hardware();
@@ -79,6 +82,27 @@ void read_romfs_task(void *pvParameters)
 	while (1);
 }
 
+void print(char str [])
+{
+	int len,i;
+	i = 0;
+	len = sizeof(str);
+	while(i < len){
+	send_byte(str[i]);
+	i++;
+	}
+}
+
+void shell_task(void * pvParameters)
+{
+
+	char py_prompt[3] = ">>>";
+//	while (1){
+		print(&py_prompt);
+//	}
+
+}
+
 int main()
 {
 	init_rs232();
@@ -94,9 +118,9 @@ int main()
 	 * the RS232. */
 	vSemaphoreCreateBinary(serial_tx_wait_sem);
 
-	/* Create a task to output text read from romfs. */
-	xTaskCreate(read_romfs_task,
-	            (signed portCHAR *) "Read romfs",
+	/* Create a task to operate a shell*/
+	xTaskCreate(shell_task,
+	            (signed portCHAR *) "Shell",
 	            512 /* stack size */, NULL, tskIDLE_PRIORITY + 2, NULL);
 
 	/* Start running the tasks. */

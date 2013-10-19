@@ -53,7 +53,8 @@ main.bin: test-romfs.o main.c
 		osdebug.c \
 		string-util.c \
 		\
-		main.c
+		main.c \
+		shell.c
 	$(CROSS_COMPILE)ld -Tmain.ld -nostartfiles -o main.elf \
 		core_cm3.o \
 		system_stm32f10x.o \
