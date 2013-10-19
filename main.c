@@ -20,7 +20,7 @@ extern const char _sromfs;
 static void setup_hardware();
 
 volatile xSemaphoreHandle serial_tx_wait_sem = NULL;
-
+volatile xQueueHandle serial_rx_queue = NULL;
 
 /* IRQ handler to handle USART2 interruptss (both transmit and receive
  * interrupts). */
@@ -66,6 +66,14 @@ void send_byte(char ch)
 	USART_ITConfig(USART2, USART_IT_TXE, ENABLE);
 }
 
+char recieve_byte()
+{
+	char ch;
+	while(!xQueueReceive(serial_rx_queue, &ch , portMAX_DELAY));
+	return ch;
+}
+
+
 void read_romfs_task(void *pvParameters)
 {
 	char buf[128];
@@ -82,12 +90,10 @@ void read_romfs_task(void *pvParameters)
 	while (1);
 }
 
-void print(char str [])
+void put(char * str)
 {
-	int len,i;
-	i = 0;
-	len = sizeof(str);
-	while(i < len){
+	int i = 0;
+	while(str[i]){
 	send_byte(str[i]);
 	i++;
 	}
@@ -96,9 +102,9 @@ void print(char str [])
 void shell_task(void * pvParameters)
 {
 
-	char py_prompt[3] = ">>>";
+	char * py_prompt = ">>>\0";
 //	while (1){
-		print(&py_prompt);
+		put(py_prompt);
 //	}
 
 }
