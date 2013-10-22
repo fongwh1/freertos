@@ -6,4 +6,5 @@ char *strchr(const char *s, int c);
 char *strcpy(char *dest, const char *src);
 char *strncpy(char *dest, const char *src, size_t n);
 char* itoa(int val);
+int bounded_strcmp(char * src1 , char * src2 , int bound);
 #endif

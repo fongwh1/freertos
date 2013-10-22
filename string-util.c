@@ -77,3 +77,19 @@ char* itoa(int val)
         buf[i] = "0123456789"[val % 10];
     return &buf; 
 }
+
+int bounded_strcmp(char * src1 , char * src2 , int bound)
+{
+	int i = 0;
+	char * pSrc1;
+	char * pSrc2 ;
+	pSrc1 = src1 ;
+	pSrc2 = src2 ;
+
+	while(*pSrc1 && *pSrc2 && (i < bound) && ( *pSrc1 == *pSrc2))
+	{
+		i++; pSrc1++; pSrc2++;
+	}
+
+	return !(*pSrc1 - *pSrc2); // result : 1 equal ; 0 unequal
+}
