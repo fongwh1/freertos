@@ -75,7 +75,8 @@ main.bin: test-romfs.o main.c
 		osdebug.o \
 		string-util.o \
 		\
-		main.o
+		main.o \
+		shell.o
 	$(CROSS_COMPILE)objcopy -Obinary main.elf main.bin
 	$(CROSS_COMPILE)objdump -S main.elf > main.list
 

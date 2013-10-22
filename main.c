@@ -12,8 +12,9 @@
 #include "filesystem.h"
 #include "fio.h"
 
-/* standard header*/
-#include <stdint.h>
+typedef struct {
+	portCHAR ch;
+}serial_ch_msg;
 
 extern const char _sromfs;
 
@@ -22,11 +23,13 @@ static void setup_hardware();
 volatile xSemaphoreHandle serial_tx_wait_sem = NULL;
 volatile xQueueHandle serial_rx_queue = NULL;
 
+
 /* IRQ handler to handle USART2 interruptss (both transmit and receive
  * interrupts). */
 void USART2_IRQHandler()
 {
 	static signed portBASE_TYPE xHigherPriorityTaskWoken;
+	serial_ch_msg rx_msg;
 
 	/* If this interrupt is for a transmit... */
 	if (USART_GetITStatus(USART2, USART_IT_TXE) != RESET) {
@@ -38,6 +41,16 @@ void USART2_IRQHandler()
 		/* Diables the transmit interrupt. */
 		USART_ITConfig(USART2, USART_IT_TXE, DISABLE);
 		/* If this interrupt is for a receive... */
+	}else if (USART_GetITStatus(USART2, USART_IT_RXNE) != RESET) {
+		/* Receive the byte from the buffer. */
+		rx_msg.ch = USART_ReceiveData(USART2);
+
+		/* Queue the received byte. */
+		if(!xQueueSendToBackFromISR(serial_rx_queue, &rx_msg, &xHigherPriorityTaskWoken)) {
+			/* If there was an error queueing the received byte,
+			 * freeze. */
+			while(1);
+		}
 	}
 	else {
 		/* Only transmit and receive interrupts should be enabled.
@@ -66,13 +79,24 @@ void send_byte(char ch)
 	USART_ITConfig(USART2, USART_IT_TXE, ENABLE);
 }
 
-char recieve_byte()
+void put(char * str)
 {
-	char ch;
-	while(!xQueueReceive(serial_rx_queue, &ch , portMAX_DELAY));
-	return ch;
+        int i = 0;
+        while(str[i]){
+                send_byte(str[i]);
+                i++;
+        }
 }
 
+
+char receive_byte()
+{
+	serial_ch_msg msg;
+	/* Wait for a byte to be queued by the receive interrupts handler. */
+	while (!xQueueReceive(serial_rx_queue, &msg, portMAX_DELAY));
+	
+	return msg.ch;
+}
 
 void read_romfs_task(void *pvParameters)
 {
@@ -90,23 +114,40 @@ void read_romfs_task(void *pvParameters)
 	while (1);
 }
 
-void put(char * str)
-{
-	int i = 0;
-	while(str[i]){
-	send_byte(str[i]);
-	i++;
-	}
-}
-
 void shell_task(void * pvParameters)
 {
 
-	char * py_prompt = ">>>\0";
-//	while (1){
+	char * py_prompt = ">>>";
+	char ch ;
+	int done;
+	
+	while(1){
 		put(py_prompt);
-//	}
+		done = 0;
+		do{
+			ch = receive_byte();
+			if( ch == '\n' || ch =='\r'){
+				done = -1;
+				put("\n\r\0");
+			}else{
+				send_byte(ch);
+			}
+		}while(!done);
+	
+	}
 
+
+}
+
+void create_queue_semaphore(){
+
+	vSemaphoreCreateBinary(serial_tx_wait_sem);
+	serial_rx_queue = xQueueCreate(1,sizeof(serial_ch_msg));
+
+	/*check if the serial_rx_queue created*/
+	if(serial_rx_queue == 0){
+		put("fail to create:serial_rx_queue\n\r");
+	}
 }
 
 int main()
@@ -114,20 +155,18 @@ int main()
 	init_rs232();
 	enable_rs232_interrupts();
 	enable_rs232();
-	
+
 	fs_init();
 	fio_init();
 	
 	register_romfs("romfs", &_sromfs);
 	
-	/* Create the queue used by the serial task.  Messages for write to
-	 * the RS232. */
-	vSemaphoreCreateBinary(serial_tx_wait_sem);
+	create_queue_semaphore();
 
 	/* Create a task to operate a shell*/
 	xTaskCreate(shell_task,
 	            (signed portCHAR *) "Shell",
-	            512 /* stack size */, NULL, tskIDLE_PRIORITY + 2, NULL);
+	            512 /* stack size */, NULL, tskIDLE_PRIORITY + 10, NULL);
 
 	/* Start running the tasks. */
 	vTaskStartScheduler();
