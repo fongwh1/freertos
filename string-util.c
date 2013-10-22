@@ -69,3 +69,11 @@ char *strncpy(char *dest, const char *src, size_t n)
 	return dest;
 }
 
+char* itoa(int val)
+{
+    static char buf[10] = { "0" };
+    int i = 9;
+    for (;i >= 0 ; i--, val /= 10)   
+        buf[i] = "0123456789"[val % 10];
+    return &buf; 
+}
