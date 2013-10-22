@@ -68,3 +68,4 @@ char *strncpy(char *dest, const char *src, size_t n)
 	while (n-- && (*d++ = *s++));
 	return dest;
 }
+

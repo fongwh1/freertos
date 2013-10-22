@@ -6,11 +6,16 @@
 #include "task.h"
 #include "queue.h"
 #include "semphr.h"
-#include <string.h>
 
 /* Filesystem includes */
 #include "filesystem.h"
 #include "fio.h"
+
+/* string includes*/
+#include "string-util.h"
+
+/* self-defined shell func*/
+#include "shell.h"
 
 typedef struct {
 	portCHAR ch;
@@ -117,20 +122,32 @@ void read_romfs_task(void *pvParameters)
 void shell_task(void * pvParameters)
 {
 
-	char * py_prompt = ">>>";
+	char * py_prompt = ">>> ";
 	char ch ;
+
+	char cmd [100];
+	int curr_ch = 0;
+	
 	int done;
 	
 	while(1){
 		put(py_prompt);
+		curr_ch = 0;
 		done = 0;
 		do{
 			ch = receive_byte();
-			if( ch == '\n' || ch =='\r'){
-				done = -1;
-				put("\n\r\0");
-			}else{
-				send_byte(ch);
+			if( curr_ch < 100){
+				if( ch == '\n' || ch =='\r'){
+					cmd[curr_ch] = '\0';
+					done = -1;
+					put("\n\r\0");
+
+					cmd_arbiter(cmd);// summit a command to look for reaction
+
+				}else{
+					cmd[curr_ch++] = ch;
+					send_byte(ch);
+				}
 			}
 		}while(!done);
 	

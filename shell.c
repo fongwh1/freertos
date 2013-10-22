@@ -1,3 +1,9 @@
 #include "shell.h"
-#include "fio.h"
-#include "string.h"
+#include <stddef.h>
+#include "string-util.h"
+
+extern void put(char * str);
+
+void cmd_arbiter(char * cmd)
+{
+}
