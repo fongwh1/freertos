@@ -17,6 +17,9 @@
 /* self-defined shell func*/
 #include "shell.h"
 
+/* maximun length of command */
+#define CMD_MAX_LEN 100
+
 typedef struct {
 	portCHAR ch;
 }serial_ch_msg;
@@ -122,21 +125,21 @@ void read_romfs_task(void *pvParameters)
 void shell_task(void * pvParameters)
 {
 
-	char * py_prompt = ">>> ";
+	char * prompt = ">>> ";
 	char ch ;
 
-	char cmd [100];
+	char cmd [CMD_MAX_LEN];
 	int curr_ch = 0;
 	
 	int done;
 	
 	while(1){
-		put(py_prompt);
+		put(prompt);
 		curr_ch = 0;
 		done = 0;
 		do{
 			ch = receive_byte();
-			if( curr_ch < 100){
+			if( curr_ch < CMD_MAX_LEN){
 				if( ch == '\n' || ch =='\r'){
 					cmd[curr_ch] = '\0';
 					done = -1;

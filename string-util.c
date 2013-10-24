@@ -69,13 +69,14 @@ char *strncpy(char *dest, const char *src, size_t n)
 	return dest;
 }
 
-char* itoa(int val)
+
+/* Here will replace another memory allocation char[] method after implementing "malloc"*/
+char *itoa(int val, char buf[])
 {
-    static char buf[10] = { "0" };
-    int i = 9;
-    for (;i >= 0 ; i--, val /= 10)   
-        buf[i] = "0123456789"[val % 10];
-    return &buf; 
+	int i = I2A_MAX_DIGI;
+	for (;i >= 0 ; i--, val /= 10)
+        	buf[i] = "0123456789"[val % 10];
+	return buf;
 }
 
 int bounded_strcmp(char * src1 , char * src2 , int bound)
