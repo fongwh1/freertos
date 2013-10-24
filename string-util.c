@@ -73,9 +73,28 @@ char *strncpy(char *dest, const char *src, size_t n)
 /* Here will replace another memory allocation char[] method after implementing "malloc"*/
 char *itoa(int val, char buf[])
 {
-	int i = I2A_MAX_DIGI;
-	for (;i >= 0 ; i--, val /= 10)
+	int i = I2A_MAX_DIGI-1;
+	for (;i >=0 ; i--, val /= 10)
         	buf[i] = "0123456789"[val % 10];
+//	buf[I2A_MAX_DIGI - 1] = '\0';
+
+	char p;
+	int numZero = 0;
+	int shiftChar;
+	int s;
+	p = buf[0];
+	while (/*bounded_strcmp(buf[numZero],"0",1)*/p == '0' && numZero < I2A_MAX_DIGI){
+		numZero++;
+		p = buf[numZero];
+	}
+	
+	/* shift char to clear zeros in front end*/
+	for ( s = numZero;s < I2A_MAX_DIGI;s++){
+		buf[s - numZero] = buf[s];
+//		buf[numZero] = '\0';
+	}
+	buf[s - numZero] = '\0';
+
 	return buf;
 }
 
