@@ -87,7 +87,7 @@ void send_byte(char ch)
 	USART_ITConfig(USART2, USART_IT_TXE, ENABLE);
 }
 
-void put(char * str)
+void puts(char * str)
 {
         int i = 0;
         while(str[i]){
@@ -134,7 +134,7 @@ void shell_task(void * pvParameters)
 	int done;
 	
 	while(1){
-		put(prompt);
+		puts(prompt);
 		curr_ch = 0;
 		done = 0;
 		do{
@@ -143,7 +143,7 @@ void shell_task(void * pvParameters)
 				if( ch == '\n' || ch =='\r'){
 					cmd[curr_ch] = '\0';
 					done = -1;
-					put("\n\r\0");
+					puts("\n\r\0");
 
 					cmd_arbiter(cmd);// summit a command to look for reaction
 
@@ -166,7 +166,7 @@ void create_queue_semaphore(){
 
 	/*check if the serial_rx_queue created*/
 	if(serial_rx_queue == 0){
-		put("fail to create:serial_rx_queue\n\r");
+		puts("fail to create:serial_rx_queue\n\r");
 	}
 }
 

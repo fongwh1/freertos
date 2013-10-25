@@ -83,7 +83,7 @@ char *itoa(int val, char * buf)
 	int shiftChar;
 	int s;
 	p = buf[0];
-	while (/*bounded_strcmp(buf[numZero],"0",1)*/p == '0' && numZero < I2A_MAX_DIGI){
+	while (p == '0' && numZero < I2A_MAX_DIGI){
 		numZero++;
 		p = buf[numZero];
 	}
@@ -106,7 +106,7 @@ int bounded_strcmp(char * src1 , char * src2 , int bound)
 	pSrc1 = src1 ;
 	pSrc2 = src2 ;
 
-	while(*pSrc1 && *pSrc2 && (i < bound) && ( *pSrc1 == *pSrc2))
+	while(*pSrc1 && *pSrc2 && (i < bound - 1) && (*pSrc1 == *pSrc2))
 	{
 		i++; pSrc1++; pSrc2++;
 	}

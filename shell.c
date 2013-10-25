@@ -14,7 +14,7 @@ typedef struct CMD_DESRCIPTION
 	
 }cmd;
 
-extern void put(char * str);
+extern void puts(char * str);
 
 void ps(char * arg)
 {
@@ -23,12 +23,13 @@ void ps(char * arg)
 
 void echo(char * arg)
 {
-/* echo implementation*/
+	puts(arg);
+	puts("\n\r\0");
 }
 
 void hello(char *arg)
 {
-        put("hello world!\n\r");
+        puts("hello world!\n\r");
 }
 
 
@@ -55,5 +56,22 @@ void cmd_arbiter(char * cmd)
 	/* prepare a char array to contain string from "itoa"*/
 	char num_char[I2A_MAX_DIGI];
 	num_char[I2A_MAX_DIGI - 1] = '\0';
+
+	int curr_cmd = 0;
+	int cmd_len;
+	char * arg;
+
+	while(curr_cmd < NUM_OF_CMD)
+	{
+		cmd_len = strlen(cmd_list[curr_cmd].name);
+		if(bounded_strcmp(cmd_list[curr_cmd].name,cmd,cmd_len))
+		{
+			arg = &cmd[cmd_len];
+			cmd_list[curr_cmd].handler(arg);
+			break;
+		}
+		curr_cmd++;
+	}
+
 }
 
