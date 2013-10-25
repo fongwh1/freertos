@@ -71,7 +71,7 @@ char *strncpy(char *dest, const char *src, size_t n)
 
 
 /* Here will replace another memory allocation char[] method after implementing "malloc"*/
-char *itoa(int val, char buf[])
+char *itoa(int val, char * buf)
 {
 	int i = I2A_MAX_DIGI-1;
 	for (;i >=0 ; i--, val /= 10)
