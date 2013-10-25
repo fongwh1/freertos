@@ -25,6 +25,7 @@ main.bin: test-romfs.o main.c
 		-fno-common -O0 \
 		-gdwarf-2 -g3 \
 		-mcpu=cortex-m3 -mthumb \
+		-ffreestanding \
 		-c \
 		\
 		$(CMSIS_LIB)/CoreSupport/core_cm3.c \

@@ -113,3 +113,14 @@ int bounded_strcmp(char * src1 , char * src2 , int bound)
 
 	return !(*pSrc1 - *pSrc2); // result : 1 equal ; 0 unequal
 }
+
+int strlen(const char * str)
+{
+	int len = 0;
+	while(*str!='\0'){
+		str++;
+		len++;
+	}
+
+	return len;
+}
