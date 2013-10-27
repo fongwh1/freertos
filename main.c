@@ -159,6 +159,11 @@ void shell_task(void * pvParameters)
 
 }
 
+void test_task(void * pvParameters)
+{
+	while(1);
+}
+
 void create_queue_semaphore(){
 
 	vSemaphoreCreateBinary(serial_tx_wait_sem);
@@ -184,9 +189,19 @@ int main()
 	create_queue_semaphore();
 
 	/* Create a task to operate a shell*/
-	xTaskCreate(shell_task,
-	            (signed portCHAR *) "Shell",
-	            512 /* stack size */, NULL, tskIDLE_PRIORITY + 10, NULL);
+	xTaskCreate(	shell_task,
+	            	(signed portCHAR *) "Shell",
+	            	512 /* stack size */, 
+			NULL, 
+			tskIDLE_PRIORITY + 10, 
+			NULL);
+
+	xTaskCreate(	test_task,
+		    	(signed portCHAR *)"test",
+			10,
+			NULL,
+			10,
+			NULL);
 
 	/* Start running the tasks. */
 	vTaskStartScheduler();

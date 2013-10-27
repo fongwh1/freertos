@@ -2,6 +2,7 @@
 #include <stdint.h>
 #include <limits.h>
 #include "string-util.h"
+#include <stdarg.h>
 
 #define ALIGN (sizeof(size_t))
 #define ONES ((size_t)-1/UCHAR_MAX)                                                                      
@@ -98,6 +99,34 @@ char *itoa(int val, char * buf)
 	return buf;
 }
 
+char *hextoa(int val, char * buf)
+{
+        int i = I2A_MAX_DIGI-1;
+        for (;i >=0 ; i--, val /= 16)
+                buf[i] = "0123456789abcdef"[val % 16];
+//      buf[I2A_MAX_DIGI - 1] = '\0';
+
+        char p;
+        int numZero = 0;
+        int shiftChar;
+        int s;
+        p = buf[0];
+        while (p == '0' && numZero < I2A_MAX_DIGI){
+                numZero++;
+                p = buf[numZero];
+        }
+
+        /* shift char to clear zeros in front end*/
+        for ( s = numZero;s < I2A_MAX_DIGI;s++){
+                buf[s - numZero] = buf[s];
+//              buf[numZero] = '\0';
+        }
+        buf[s - numZero] = '\0';
+
+        return buf;
+}
+
+
 int bounded_strcmp(char * src1 , char * src2 , int bound)
 {
 	int i = 0;
@@ -123,4 +152,81 @@ int strlen(const char * str)
 	}
 
 	return len;
+}
+
+int sprintf(char * dest, const char * format, ... )
+{
+	va_list args;
+	int count = 0;
+
+	char * srcArrPtr;
+	char * destArrPtr;	
+	srcArrPtr = format;
+	destArrPtr = dest;
+
+	typedef union {
+		unsigned int 	uni_arg;
+		int		int_arg;
+		char *		str_arg;
+	} unn_arg;
+
+	unn_arg va_item;
+
+	char number[10];
+	int numDigit = 0;
+	char lenFormat;
+
+	va_start(args, format);
+
+	while( *srcArrPtr != '\0')
+	{
+		if(*srcArrPtr == '%')
+		{
+			srcArrPtr++;
+			switch(*srcArrPtr){
+				case 'C':
+				case 'c':{
+					va_item.int_arg = va_arg(args, int);
+					*destArrPtr = (char)va_item.int_arg;
+					count++;
+					destArrPtr++;
+					srcArrPtr++;
+					break;}
+				case 'd':
+                                case 'i':{
+					va_item.int_arg = va_arg(args, int);
+					itoa(va_item.int_arg, destArrPtr);
+					count += strlen(destArrPtr);
+					srcArrPtr++;
+					destArrPtr++;
+                                        break;  }
+				case 'S':
+                                case 's':{
+					va_item.str_arg = va_arg(args, char *);
+					strcpy(destArrPtr, va_item.str_arg);
+					count += strlen(destArrPtr);
+					destArrPtr++;
+					srcArrPtr++;
+                                        break;}
+				case 'X':
+				case 'x':{
+					va_item.int_arg = va_arg(args, int);
+                                        hextoa(va_item.int_arg, destArrPtr);
+                                        count += strlen(destArrPtr);
+                                        srcArrPtr++;
+                                        destArrPtr++;
+					}
+                              	default:
+                                        break;  
+
+			}
+		}else{
+			*destArrPtr++ = *srcArrPtr;
+			count++;
+			srcArrPtr++;
+		}
+	}
+	dest[count] = '\0';
+	va_end(args);
+	return count;
 }

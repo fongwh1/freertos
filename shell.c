@@ -16,9 +16,12 @@ typedef struct CMD_DESRCIPTION
 
 extern void puts(char * str);
 
+
+
+
 void ps(char * arg)
 {
-/* ps implementation*/
+/* ps inplementation */
 }
 
 void echo(char * arg)

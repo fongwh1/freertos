@@ -348,6 +348,8 @@ to find the path to the correct portmacro.h file. */
 extern "C" {
 #endif
 
+#include "projdefs.h"
+
 #include "mpu_wrappers.h"
 
 /*
