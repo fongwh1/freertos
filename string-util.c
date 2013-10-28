@@ -230,3 +230,14 @@ int sprintf(char * dest, const char * format, ... )
 	va_end(args);
 	return count;
 }
+
+char * strcat(char * dest, const char * src){
+
+	char * sdest = dest;
+	while(*dest)
+		dest++;
+	while(*dest++ = *src++)
+		;
+
+	return sdest;
+}

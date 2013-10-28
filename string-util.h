@@ -10,6 +10,7 @@ char* hextoa(int val,char * buf);
 int bounded_strcmp(char * src1 , char * src2 , int bound);
 int strlen(const char * str);
 int sprintf(char * dest, const char * format, ... );
+char * strcat(char * dest, const char * src);
 #define I2A_MAX_DIGI 10
 
 #endif
