@@ -197,10 +197,10 @@ int main()
 			NULL);
 
 	xTaskCreate(	test_task,
-		    	(signed portCHAR *)"test",
-			10,
+		    	(signed portCHAR *) "Test",
+			512,
 			NULL,
-			10,
+			tskIDLE_PRIORITY + 9,
 			NULL);
 
 	/* Start running the tasks. */
