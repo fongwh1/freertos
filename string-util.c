@@ -74,14 +74,19 @@ char *strncpy(char *dest, const char *src, size_t n)
 /* Here will replace another memory allocation char[] method after implementing "malloc"*/
 char *itoa(int val, char * buf)
 {
+	if(val == 0){
+		buf[0] = '0';
+		buf[1] = '\0';
+	
+		return buf;
+	}
+
 	int i = I2A_MAX_DIGI-1;
 	for (;i >=0 ; i--, val /= 10)
         	buf[i] = "0123456789"[val % 10];
-//	buf[I2A_MAX_DIGI - 1] = '\0';
 
 	char p;
 	int numZero = 0;
-	int shiftChar;
 	int s;
 	p = buf[0];
 	while (p == '0' && numZero < I2A_MAX_DIGI){
@@ -92,7 +97,6 @@ char *itoa(int val, char * buf)
 	/* shift char to clear zeros in front end*/
 	for ( s = numZero;s < I2A_MAX_DIGI;s++){
 		buf[s - numZero] = buf[s];
-//		buf[numZero] = '\0';
 	}
 	buf[s - numZero] = '\0';
 
@@ -101,14 +105,20 @@ char *itoa(int val, char * buf)
 
 char *hextoa(int val, char * buf)
 {
+        if(val == 0){
+                buf[0] = '0';
+                buf[1] = '\0';
+
+                return buf;
+        }
+
+
         int i = I2A_MAX_DIGI-1;
         for (;i >=0 ; i--, val /= 16)
                 buf[i] = "0123456789abcdef"[val % 16];
-//      buf[I2A_MAX_DIGI - 1] = '\0';
 
         char p;
         int numZero = 0;
-        int shiftChar;
         int s;
         p = buf[0];
         while (p == '0' && numZero < I2A_MAX_DIGI){
@@ -119,7 +129,6 @@ char *hextoa(int val, char * buf)
         /* shift char to clear zeros in front end*/
         for ( s = numZero;s < I2A_MAX_DIGI;s++){
                 buf[s - numZero] = buf[s];
-//              buf[numZero] = '\0';
         }
         buf[s - numZero] = '\0';
 
