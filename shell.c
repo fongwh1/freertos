@@ -2,6 +2,9 @@
 #include <stddef.h>
 #include "string-util.h"
 
+#include "FreeRTOS.h"
+#include "task.h"
+
 #define NUM_OF_CMD 3
 
 typedef void (*p_cmd_func)(char * arg);
@@ -16,12 +19,23 @@ typedef struct CMD_DESRCIPTION
 
 extern void puts(char * str);
 
-
-
-
 void ps(char * arg)
 {
-/* ps inplementation */
+	int numberOfTask;
+
+	int charcheck;
+
+	numberOfTask = uxTaskGetNumberOfTasks();
+
+	signed portCHAR psInfo[numberOfTask * 40];
+
+	vTaskList(psInfo);
+
+	puts(psInfo);
+
+	puts("\n\r\0");
+
+
 }
 
 void echo(char * arg)

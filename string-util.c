@@ -175,6 +175,7 @@ int sprintf(char * dest, const char * format, ... )
 	char number[10];
 	int numDigit = 0;
 	char lenFormat;
+	int ptr;
 
 	va_start(args, format);
 
@@ -188,33 +189,48 @@ int sprintf(char * dest, const char * format, ... )
 				case 'c':{
 					va_item.int_arg = va_arg(args, int);
 					*destArrPtr = (char)va_item.int_arg;
-					count++;
 					destArrPtr++;
-					srcArrPtr++;
 					break;}
+				case 'D':
 				case 'd':
                                 case 'i':{
 					va_item.int_arg = va_arg(args, int);
 					itoa(va_item.int_arg, destArrPtr);
-					count += strlen(destArrPtr);
-					srcArrPtr++;
-					destArrPtr++;
+					destArrPtr +=strlen(destArrPtr);
                                         break;  }
 				case 'S':
                                 case 's':{
 					va_item.str_arg = va_arg(args, char *);
 					strcpy(destArrPtr, va_item.str_arg);
-					count += strlen(destArrPtr);
-					destArrPtr++;
-					srcArrPtr++;
+					destArrPtr +=strlen(destArrPtr);
                                         break;}
 				case 'X':
 				case 'x':{
 					va_item.int_arg = va_arg(args, int);
                                         hextoa(va_item.int_arg, destArrPtr);
-                                        count += strlen(destArrPtr);
-                                        srcArrPtr++;
                                         destArrPtr++;
+					}
+				case 'p':{
+					 ptr = va_arg(args, int);
+                                        if(ptr == NULL){
+                                                strcpy(destArrPtr, "<nil>");
+                                                destArrPtr += strlen(destArrPtr);
+                                        }else{
+                                                itoa(ptr,destArrPtr);
+                                                destArrPtr += strlen(destArrPtr);
+                                        }
+                                        break;
+					}
+				case 'l':{
+					if(*(srcArrPtr+1) == 'u'){
+						srcArrPtr++;
+					}
+					}
+				case 'u':{
+                                        va_item.int_arg = va_arg(args, int);
+                                        itoa(va_item.int_arg, destArrPtr);
+                                        destArrPtr +=strlen(destArrPtr);
+                                        break;
 					}
                               	default:
                                         break;  
@@ -222,13 +238,12 @@ int sprintf(char * dest, const char * format, ... )
 			}
 		}else{
 			*destArrPtr++ = *srcArrPtr;
-			count++;
-			srcArrPtr++;
 		}
+		srcArrPtr++;
 	}
-	dest[count] = '\0';
+	*destArrPtr = '\0';
 	va_end(args);
-	return count;
+	return destArrPtr - dest;
 }
 
 char * strcat(char * dest, const char * src){
