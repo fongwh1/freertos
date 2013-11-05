@@ -25,7 +25,6 @@ main.bin: test-romfs.o main.c
 		-fno-common -O0 \
 		-gdwarf-2 -g3 \
 		-mcpu=cortex-m3 -mthumb \
-		-ffreestanding \
 		-c \
 		\
 		$(CMSIS_LIB)/CoreSupport/core_cm3.c \
@@ -52,10 +51,12 @@ main.bin: test-romfs.o main.c
 		fio.c \
 		\
 		osdebug.c \
-		string-util.c \
+		-ffreestanding string-util.c \
 		\
 		main.c \
-		shell.c
+		shell.c \
+		tryit.c
+
 	$(CROSS_COMPILE)ld -Tmain.ld -nostartfiles -o main.elf \
 		core_cm3.o \
 		system_stm32f10x.o \
@@ -77,7 +78,8 @@ main.bin: test-romfs.o main.c
 		string-util.o \
 		\
 		main.o \
-		shell.o
+		shell.o \
+		tryit.o
 	$(CROSS_COMPILE)objcopy -Obinary main.elf main.bin
 	$(CROSS_COMPILE)objdump -S main.elf > main.list
 
