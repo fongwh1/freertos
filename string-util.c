@@ -5,6 +5,8 @@
 #include "string-util.h"
 #include <stdarg.h>
 
+#define STRING_ZERO "0"
+
 #define ALIGN (sizeof(size_t))
 #define ONES ((size_t)-1/UCHAR_MAX)                                                                      
 #define HIGHS (ONES * (UCHAR_MAX/2+1))
@@ -76,9 +78,7 @@ char *strncpy(char *dest, const char *src, size_t n)
 char *itoa(int val, char * buf)
 {
 	if(val == 0){
-		buf[0] = '0';
-		buf[1] = '\0';
-	
+		buf = STRING_ZERO;
 		return buf;
 	}
 
@@ -107,9 +107,7 @@ char *itoa(int val, char * buf)
 char *hextoa(int val, char * buf)
 {
         if(val == 0){
-                buf[0] = '0';
-                buf[1] = '\0';
-
+		buf = STRING_ZERO;
                 return buf;
         }
 
