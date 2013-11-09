@@ -14,6 +14,8 @@ FREERTOS_SRC = $(CODEBASE)/libraries/FreeRTOS
 FREERTOS_INC = $(FREERTOS_SRC)/include/                                       
 FREERTOS_PORT_INC = $(FREERTOS_SRC)/portable/GCC/ARM_$(ARCH)/
 
+HEAP_METHOD = heap_1
+
 all: main.bin
 
 main.bin: test-romfs.o main.c
@@ -23,7 +25,7 @@ main.bin: test-romfs.o main.c
 		-I$(CODEBASE)/libraries/CMSIS/CM3/DeviceSupport/ST/STM32F10x \
 		-I$(CODEBASE)/libraries/STM32F10x_StdPeriph_Driver/inc \
 		-fno-common -O0 \
-		-gdwarf-2 -g3 \
+		-gdwarf-2 -ffreestanding -g3 \
 		-mcpu=cortex-m3 -mthumb \
 		-c \
 		\
@@ -41,7 +43,7 @@ main.bin: test-romfs.o main.c
 		$(FREERTOS_SRC)/queue.c \
 		$(FREERTOS_SRC)/tasks.c \
 		$(FREERTOS_SRC)/portable/GCC/ARM_CM3/port.c \
-		$(FREERTOS_SRC)/portable/MemMang/heap_1.c \
+		$(FREERTOS_SRC)/portable/MemMang/$(HEAP_METHOD).c \
 		\
 		stm32_p103.c \
 		\
@@ -51,11 +53,11 @@ main.bin: test-romfs.o main.c
 		fio.c \
 		\
 		osdebug.c \
-		-ffreestanding string-util.c \
+		string-util.c \
 		\
 		main.c \
 		shell.c \
-		tryit.c
+		memtest.c
 
 	$(CROSS_COMPILE)ld -Tmain.ld -nostartfiles -o main.elf \
 		core_cm3.o \
@@ -68,7 +70,7 @@ main.bin: test-romfs.o main.c
 		misc.o \
 		\
 		croutine.o list.o queue.o tasks.o \
-		port.o heap_1.o \
+		port.o $(HEAP_METHOD).o \
 		\
 		stm32_p103.o \
 		\
@@ -79,7 +81,7 @@ main.bin: test-romfs.o main.c
 		\
 		main.o \
 		shell.o \
-		tryit.o
+		memtest.o
 	$(CROSS_COMPILE)objcopy -Obinary main.elf main.bin
 	$(CROSS_COMPILE)objdump -S main.elf > main.list
 

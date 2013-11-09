@@ -5,7 +5,9 @@
 #include "FreeRTOS.h"
 #include "task.h"
 
-#define NUM_OF_CMD 3
+#include "memtest.h"
+
+#define NUM_OF_CMD 4
 
 typedef void (*p_cmd_func)(char * arg);
 /* define a command desrciption structure*/
@@ -46,9 +48,13 @@ void echo(char * arg)
 
 void hello(char *arg)
 {
-        puts("hello world!\n\r");
+        printf("hello world!\n\r");
 }
 
+void memtest(char *arg)
+{
+	memtest_run();
+}
 
 static cmd cmd_list [NUM_OF_CMD] = {
 	{
@@ -65,6 +71,11 @@ static cmd cmd_list [NUM_OF_CMD] = {
 		.name = "hello",
 		.des = "hello world",
 		.handler = hello
+	},
+	{
+		.name = "memtest",
+		.des = "memory test",
+		.handler = memtest
 	}
 };
 
