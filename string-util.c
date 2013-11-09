@@ -1,4 +1,4 @@
-#include <stdio.h>
+//#include <stdio.h>
 #include <stddef.h>
 #include <stdint.h>
 #include <limits.h>
@@ -263,4 +263,101 @@ char * strcat(char * dest, const char * src){
 		;
 
 	return sdest;
+}
+
+void printf(const char * format, ... )
+{
+
+	char dest [100] = {'\0'};
+
+	va_list args;
+	int count = 0;
+
+	char * srcArrPtr;
+	char * destArrPtr;
+	srcArrPtr = format;
+	destArrPtr = dest;
+
+	typedef union {
+		unsigned int 	uni_arg;
+		int		int_arg;
+		char *		str_arg;
+	} unn_arg;
+
+	unn_arg va_item;
+
+	char number[10];
+	int numDigit = 0;
+	char lenFormat;
+	int ptr;
+
+	va_start(args, format);
+
+	while( *srcArrPtr != '\0')
+	{
+		if(*srcArrPtr == '%')
+		{
+			srcArrPtr++;
+			switch(*srcArrPtr){
+				case 'C':
+				case 'c':{
+					va_item.int_arg = va_arg(args, int);
+					*destArrPtr = (char)va_item.int_arg;
+					destArrPtr++;
+					break;}
+				case 'D':
+				case 'd':
+                                case 'i':{
+					va_item.int_arg = va_arg(args, int);
+					itoa(va_item.int_arg, destArrPtr);
+					destArrPtr +=strlen(destArrPtr);
+                                        break;  }
+				case 'S':
+                                case 's':{
+					va_item.str_arg = va_arg(args, char *);
+					strcpy(destArrPtr, va_item.str_arg);
+					destArrPtr +=strlen(destArrPtr);
+                                        break;}
+				case 'X':
+				case 'x':{
+					va_item.int_arg = va_arg(args, int);
+                                        hextoa(va_item.int_arg, destArrPtr);
+                                        destArrPtr++;
+					}
+				case 'p':{
+					 ptr = va_arg(args, int);
+                                        if(ptr == NULL){
+                                                strcpy(destArrPtr, "<nil>");
+                                                destArrPtr += strlen(destArrPtr);
+                                        }else{
+                                                itoa(ptr,destArrPtr);
+                                                destArrPtr += strlen(destArrPtr);
+                                        }
+                                        break;
+					}
+				case 'l':{
+					if(*(srcArrPtr+1) == 'u'){
+						srcArrPtr++;
+					}
+					}
+				case 'u':{
+                                        va_item.int_arg = va_arg(args, int);
+                                        itoa(va_item.int_arg, destArrPtr);
+                                        destArrPtr +=strlen(destArrPtr);
+                                        break;
+					}
+                              	default:
+                                        break;  
+
+			}
+		}else{
+			*destArrPtr++ = *srcArrPtr;
+		}
+		srcArrPtr++;
+	}
+	*destArrPtr = '\0';
+	va_end(args);
+
+	puts(dest);
+
 }
